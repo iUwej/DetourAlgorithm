@@ -222,6 +222,9 @@ public class DetourAlgorithm{
 						return false;
 				}
 
+				if((distanceBC*2)<=maxAllowedDetour)
+					return true; //we can still pick from B and Drop to C then continue to D
+
 
 			}
 				
