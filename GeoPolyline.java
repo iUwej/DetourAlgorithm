@@ -2,8 +2,7 @@ import java.util.LinkedList;
 import java.util.ListIterator;
 /**
 *GeoPolyline class  represents a path. It is a set of ordered
-*Geopoints(coordinates) represented internally as a LinkedList<Geopoint>. The resultant
-*structure can also be view as  a Directed  Graph
+*Geopoints(coordinates) represented internally as a LinkedList<Geopoint>.
 */
 public class GeoPolyline {
 
@@ -16,7 +15,7 @@ public class GeoPolyline {
 	}
 
 	public boolean addPoint(GeoPoint point){
-		//our graph is acyclic, we assume shortest paths, eliminate duplicates
+		//, we assume shortest paths, eliminate duplicates
 		if(geoPath.contains(point))
 			return false;
 		geoPath.add(point);// add point to end of linklist
