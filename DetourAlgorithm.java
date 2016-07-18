@@ -54,19 +54,23 @@ public class DetourAlgorithm{
 		//case 1: this is the picking point for BC 
 		
 		if(currentBC.equals(l2.getStart())){
-			GeoPoint bcPrev=currentBC;
-			GeoPoint adPrev=currentAD;
+			//eliminate all common points
+            while(l2Iterator.hasNext() && l1Iterator.hasNext()){
+                currentAD=l1Iterator.next();
+                currentBC=l2Iterator.next();
+                if(!(currentAD.equals(currentBC)))
+                   break;
+            }
 
+            //check if we have  a destination so far
+                if(!l1Iterator.hasNext() || !l2Iterator.hasNext())
+                    return true;//no detour so far
+                
+            //we have a detour at this point
+            //check whether we can combine within constraints
 			
-			//case 1: this is also the destination for AD
-			if(!l1Iterator.hasNext())
-				return true; //no detour
-			
-			currentAD=l1Iterator.next();
-			currentBC=l2Iterator.next();
-			//case 2: BC is heading in a different direction
-			if(!currentBC.equals(currentAD)){
-
+                GeoPoint adPrev=null;
+                GeoPoint bcPrev=null;
 				//compute distance to both destinations from intersection point
 				double distanceAD=0.0;
 				//reset both iterators to intersections
@@ -95,51 +99,9 @@ public class DetourAlgorithm{
 
 				if((distanceBC *2)<=maxAllowedDetour)
 					return true; //we can first deliver to C then come back and deliver to D within constraints
-			}
-			//case 3: we are at pick up of BC and heading in same direction as AD
-			else{
-				while(l1Iterator.hasNext() && l2Iterator.hasNext()){
-					currentBC=l2Iterator.next();
-					currentAD=l1Iterator.next();
-					if(!currentAD.equals(currentBC)) //we had a diversion at the previous point
-						break;
-				} 
-
-				//incase we reached any destination along the way
-				if(!l1Iterator.hasNext() || !l2Iterator.hasNext())
-					return true; // we have no detour
-				//check whether we can first deliver to AD within constraints
-				double distanceAD=0.0;
-				currentAD=l1Iterator.previous(); //reset the iterator to the diversion point
-				while(l1Iterator.hasNext()){
-					adPrev= currentAD;
-					currentAD=l1Iterator.next();
-					distanceAD +=computeDistance(adPrev,currentAD);
-					if((distanceAD*2)>maxAllowedDetour)
-						break;
-				}
-				if((distanceAD*2)<=maxAllowedDetour)
-					return true; // we can first deliver to destination D and come back still within constraints
-
-				//check whether we can first deliver to BC within constraints
-				double distanceBC=0.0;
-				currentBC=l2Iterator.previous();
-				while(l2Iterator.hasNext()){
-					bcPrev=currentBC;
-					currentBC=l2Iterator.next();
-					distanceBC +=computeDistance(bcPrev,currentBC);
-					if((distanceBC*2)>maxAllowedDetour)
-						return false; //at this point we cannot combine the orders within constraints
-				}
-
-				if((distanceBC*2)<=maxAllowedDetour)
-					return true; // we can meet the constraints by first travelling to C and back
-
-				return false; // we cannot meet the maxDetour constraints, separate orders
-
-
-			}
-
+                return false; //we cannot combine
+			
+			
 
 		}
 		//the intersection is not the pick up point for BC
